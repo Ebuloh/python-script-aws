@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description:
+  This Template create automatic remediation to enforce events notifications for s3 buckets in the AWS account.
+
+# Parameters:
+#   set of parameters
+
+Resources: 
+
+  # AWS Config rule for bucket events notifications
+  #
+  BucketNotificationcleRule:
+    Type: AWS::Config::ConfigRule
+    Properties:
+      ConfigRuleName: BucketNotificationcleRule
+      Description: "Rule to enable event notification on S3 buckets"
+      Scope:
+        ComplianceResourceTypes:
+          - AWS::S3::Bucket
+      Source:
+        Owner: AWS
+        SourceIdentifier: S3_EVENT_NOTIFICATIONS_ENABLED
+
+  # AWS Config auto-remediation for bucket public-read access
+  BucketlifecycleRemediation:
+    Type: AWS::Config::RemediationConfiguration
+    Properties:
+      Automatic: true
+      MaximumAutomaticAttempts: 5
+      RetryAttemptSeconds: 30
+      ConfigRuleName: !Ref BucketNotificationcleRule
+      TargetId: AddEventsNotificationToS3-2
+      TargetType: SSM_DOCUMENT
+      Parameters:
+        AutomationAssumeRole:
+          StaticValue:
+            Values:
+              - arn:aws:iam::900472373366:role/bucket-lifecycle-automation-RemediationRole-117KNLN3D91XU      
+        S3BucketName:
+          ResourceValue:
+            Value: RESOURCE_ID
+# Outputs:
+#   set of outputs

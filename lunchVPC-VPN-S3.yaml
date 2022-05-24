@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >
+ This template is a parent template to lunch the following templates:
+   -VectorZeroVPNEnvironment.yml
+
+Parameters:
+#First Create VPC Parameter for cidr block
+  VpcCIDR:
+    Default: 10.0.0.0/16
+    Description: Enter the CIDR Block
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+
+  VPCNAME:
+    Default: Client VPC Environment
+    Description: Enter VPC Name
+    Type: String
+
+#creating subnet parameters for vpc environment
+
+  ClientSubCidr:
+    Default: 10.0.1.0/24
+    Description: Enter CIDR for Subnet
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+
+  AppSubCidr:
+    Default: 10.0.0.0/24
+    Description: Enter CIDR for Subnet
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+
+
+#VPN ENDPOINT STUFF 
+
+  EndpointCidrBlock:
+    Default: 192.168.0.0/16
+    Description: Enter CIDR for VPN clients
+    Type: String
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+
+  EndpointServerCert:
+    Default: Enter Valid ARN
+    Description: Enter ARN for Server Authentication
+    Type: String
+
+  ClientServerCert:
+    Default: Enter Valid ARN
+    Description: Enter ARN for Client Authentication
+    Type: String
+
+#Customer bucket stuffs
+  S3Bucket1Name:
+    Default: customer2-simple-storage
+    Description: Bucket Name
+    Type: String
+    
+  S3Bucket2Name:
+    Default: customer2-simple-storage-landing
+    Description: Bucket Name
+    Type: String
+    
+  Customer2AppServerInstanceType:
+    Default: t2.micro
+    Description: Specify Instance Type
+    Type: String
+
+  Customer2AppServerKeyName:
+    Default: VZdarren-vzt
+    Description: Specify Key Name
+    Type: String
+
+  Customer2AppServerImageId:
+    Default: ami-0c02fb55956c7d316
+    Description: AMI for EC2 Instance
+    Type: String
+
+  Customer2AppServerSubnetId:
+    Default: subnet-02dc4768137dd8b40
+    Description: Specify Subnet
+    Type: String
+
+  Customer2AppServerSecurityGroup:
+    Default: sg-0d118715dbaeec5a4
+    Description: Specify Security Group ID
+    Type: String    
+
+Resources:
+  VpcVpnStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters: 
+        VpcCIDR: !Ref VpcCIDR
+        VPCNAME: !Ref VPCNAME
+        ClientSubCidr: !Ref ClientSubCidr
+        AppSubCidr: !Ref AppSubCidr
+        EndpointCidrBlock: !Ref EndpointCidrBlock
+        EndpointServerCert: !Ref EndpointServerCert
+        ClientServerCert: !Ref ClientServerCert
+
+      TemplateURL: https://cf-templates-bmnpl599pfyc-us-east-1.s3.amazonaws.com/VectorZeroVPNEnvironment.yml
+      TimeoutInMinutes: 60
+
+  CustomerBucketStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters: 
+       S3Bucket1Name: !Ref S3Bucket1Name
+       S3Bucket2Name: !Ref S3Bucket2Name
+       Customer2AppServerInstanceType: !Ref Customer2AppServerInstanceType
+       Customer2AppServerKeyName: !Ref Customer2AppServerKeyName
+       Customer2AppServerImageId: !Ref Customer2AppServerImageId
+       Customer2AppServerSubnetId: !Ref Customer2AppServerSubnetId
+       Customer2AppServerSecurityGroup: !Ref Customer2AppServerSecurityGroup
+      TemplateURL: https://cf-templates-bmnpl599pfyc-us-east-1.s3.amazonaws.com/S3Bucket(3).yml
+      TimeoutInMinutes: 60
+
+
+
+
+Outputs:
+  VpcVpnStackRef:
+    Value: !Ref VpcVpnStack
+  
+  S3StackRef:
+    Value: !Ref CustomerBucketStack

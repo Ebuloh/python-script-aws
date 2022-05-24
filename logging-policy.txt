@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Sid":"AllowSSLRequestsOnly_o4kvtr","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::customer-aj4r2c6fgl1o5d0e-logging","arn:aws:s3:::customer-aj4r2c6fgl1o5d0e-logging/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}

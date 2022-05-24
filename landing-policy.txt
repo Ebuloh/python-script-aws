@@ -1,0 +1,1 @@
+{"Version":"2012-10-17","Statement":[{"Sid":"AllowSSLRequestsOnly_rhpdlf","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::customer-aj4r2c6fgl1o5d0e-landing","arn:aws:s3:::customer-aj4r2c6fgl1o5d0e-landing/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}
