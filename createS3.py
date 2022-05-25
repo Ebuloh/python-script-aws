@@ -21,6 +21,82 @@ s3.create_bucket(Bucket=Landing_bucket)
 s3.create_bucket(Bucket=Storage_bucket)
 s3.create_bucket(Bucket=Logging_bucket)
 
+# #add basic bucket policy
+L_policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowSSLRequestsOnly_nkjpnk",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::"+Landing_bucket,
+                "arn:aws:s3:::"+Landing_bucket+"/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+
+Lo_policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowSSLRequestsOnly_nkjpnk",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::"+Logging_bucket,
+                "arn:aws:s3:::"+Logging_bucket+"/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+
+S_policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowSSLRequestsOnly_nkjpnk",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::"+Storage_bucket,
+                "arn:aws:s3:::"+Storage_bucket+"/*"
+            ],
+            "Condition": {
+                "Bool": {
+                    "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+
+def create_bucket_policy(policy, bucket_name):
+    policy_string = json.dumps(policy)
+
+    client.put_bucket_policy(
+        Bucket=bucket_name,
+        Policy=policy_string
+    )
+
+create_bucket_policy(L_policy, Landing_bucket)
+create_bucket_policy(Lo_policy, Logging_bucket)
+create_bucket_policy(S_policy, Storage_bucket)
+
 # function to check if bucket exists
 def check_if_bucket_exist(bucketName):
     try:
@@ -34,6 +110,7 @@ def check_if_bucket_exist(bucketName):
     else:
         return False    
 
+#*********************************** Enable server access logging start**********************************************
 policy_text = {
     "Version": "2012-10-17",
     "Statement": [
@@ -63,15 +140,9 @@ policy_text = {
 #     ExpectedBucketOwner= "900472373366"
 # )
 
-def create_bucket_policy(policy, bucket_name):
-    policy_string = json.dumps(policy)
-
-    client.put_bucket_policy(
-        Bucket=bucket_name,
-        Policy=policy_string
-    )
-
 create_bucket_policy(policy_text, Logging_bucket)  
+#***************************** Enable server access logging end****************************************************
+
 
 def enable_server_access_logging(bucket_name, target_bucket, targeet_prefix):
     client.put_bucket_logging(
@@ -87,6 +158,43 @@ def enable_server_access_logging(bucket_name, target_bucket, targeet_prefix):
 enable_server_access_logging(Landing_bucket, Logging_bucket, Landing_bucket+"-logs/" )   
 enable_server_access_logging(Logging_bucket, Logging_bucket, Logging_bucket+"-logs/" )   
 enable_server_access_logging(Storage_bucket, Logging_bucket, Storage_bucket+"-logs/" )   
+
+# block public access landing bucket
+response = client.put_public_access_block(
+    Bucket=Landing_bucket,
+    PublicAccessBlockConfiguration={
+        'BlockPublicAcls': True,
+        'IgnorePublicAcls': True,
+        'BlockPublicPolicy': True,
+        'RestrictPublicBuckets': True
+    },
+    ExpectedBucketOwner='900472373366'
+)
+
+# block public access Logging bucket
+response = client.put_public_access_block(
+    Bucket=Logging_bucket,
+    PublicAccessBlockConfiguration={
+        'BlockPublicAcls': True,
+        'IgnorePublicAcls': True,
+        'BlockPublicPolicy': True,
+        'RestrictPublicBuckets': True
+    },
+    ExpectedBucketOwner='900472373366'
+)
+
+# block public access storage bucket
+response = client.put_public_access_block(
+    Bucket=Storage_bucket,
+    PublicAccessBlockConfiguration={
+        'BlockPublicAcls': True,
+        'IgnorePublicAcls': True,
+        'BlockPublicPolicy': True,
+        'RestrictPublicBuckets': True
+    },
+    ExpectedBucketOwner='900472373366'
+)
+
 
 # function to get bucket encryption
 def get_bucket_encryption_key(bucketName, account):
