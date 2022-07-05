@@ -6,7 +6,7 @@ type="smtp"
 
 [[port]]
 ports=["tcp/25"]
-services=["smtp"
+services=["smtp"]
 
 [service.telnet]
 type="telnet"
