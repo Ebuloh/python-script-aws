@@ -1,12 +1,13 @@
 [listener]
 type="socket"
 
-[service.smtp]
-type="smtp"
+[service.ssh-simulator]
+type="ssh-simulator"
+credentials=["root:root", "root:password"]
 
 [[port]]
-ports=["tcp/25"]
-services=["smtp"]
+ports=["tcp/8022", "tcp/8023"]
+services=["ssh-simulator"]
 
 [service.telnet]
 type="telnet"
@@ -17,11 +18,19 @@ server-name="WS-3244"
 port="tcp/5900"
 services=["telnet"]
 
+[service.smtp]
+type="smtp"
+
+[[port]]
+port="tcp/25"
+services=["smtp"]
+
 [channel.console]
 type="console"
 
 [[filter]]
 channel=["console"]
 
-[[logging]] output = "stdout"
+[[logging]]
+output = "stdout"
 level = "debug"
