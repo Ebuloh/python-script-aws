@@ -1,0 +1,27 @@
+[listener]
+type="socket"
+
+[service.smtp]
+type="smtp"
+
+[[port]]
+ports=["tcp/25"]
+services=["smtp"
+
+[service.telnet]
+type="telnet"
+image="/data/screenshot-20171030174349.png"
+server-name="WS-3244"
+
+[[port]]
+port="tcp/5900"
+services=["telnet"]
+
+[channel.console]
+type="console"
+
+[[filter]]
+channel=["console"]
+
+[[logging]] output = "stdout"
+level = "debug"
