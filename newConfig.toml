@@ -100,18 +100,6 @@ type="dns"
 port="udp/53"
 services=["dns01"]
 
-[service.dnsproxy01]
-type="dns-proxy"
-director="googledns01"
-
-[[port]]
-port="udp/53"
-services=["dnsproxy01"]
-
-[director.googledns01]
-type="forward"
-host="8.8.8.8"
-
 [service.cwmp01]
 type="cwmp"
 
