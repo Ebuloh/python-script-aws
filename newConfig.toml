@@ -1,6 +1,13 @@
 [listener]
 type="socket"
 
+[service.sshsimulator]
+type="ssh-simulator"
+
+[[port]]
+port="tcp/8022"
+services=["sshsimulator"]
+
 [service.https]
 type="https"
 
