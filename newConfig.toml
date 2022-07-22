@@ -1,17 +1,59 @@
 [listener]
 type="socket"
 
-[service.httpProxy]
-type="http-proxy"
-director="lxc"
+[service.vnc]
+type="vnc"
+image="/data/images/desktop.png"
+server-name="WS-3244"
 
 [[port]]
-port="tcp/8080"
-services=["httpProxy"]
+port="tcp/5900"
+services=["vnc"]
 
-[director.lxc]
-type="lxc"
-<...>
+[service.tftp]
+type="tftp"
+
+[[port]]
+port="udp/69"
+services=["tftp"]
+
+[service.redis]
+type="redis"
+version="4.0.2"
+os="Linux 2.6.32-431.el6.x86_64 x86_64"
+
+[[port]]
+port="tcp/6379"
+services=["redis"]
+
+[service.memcached01]
+type="memcached"
+
+[[port]]
+port="udp/11211"
+services=["memcached01"]
+
+[service.ldap]
+type="ldap"
+credentials=["admin:admin", "root:root"]
+naming-contexts=[ "dc=example,dc=com", "dc=ad,dc=myserver,dc=com" ]
+vendor-name=[ "HT Directory Server" ]
+vendor-version=[ "0.1.0.0" ]
+description=[ "Directory Server" ]
+objectclass=[ "dcObject", "organization" ]
+
+[[port]]
+port="tcp/389"
+services=["ldap"]
+
+[service.ipp]
+type="ipp"
+server="HP LaserJet"
+storage-dir="/tmp/"
+
+[[port]]
+port="tcp/631"
+services=["ipp"]
 
 [service.ftp]
 type="ftp"
