@@ -1,6 +1,13 @@
 [listener]
 type="socket"
 
+[service.https]
+type="https"
+
+[[port]]
+port="tcp/8080"
+services=["https"]
+
 [service.vnc]
 type="vnc"
 image="/data/images/desktop.png"
